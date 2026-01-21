@@ -1,6 +1,6 @@
 #pragma once
 #include "chip8.h"
-#include <cstdint>
+#include <stdint.h>
 
 void memory_init(Chip8 *chip8);
 void memory_load_rom(Chip8 *chip8, const char *filename);
