@@ -1,6 +1,7 @@
 #pragma once
 #include "chip8.h"
-#include <cstdint>
+#include "stdbool.h"
+#include <stdint.h>
 
 void display_clear(Chip8 *chip8);
 uint8_t display_draw_sprite(Chip8 *chip8, uint8_t x, uint8_t y, uint8_t height,

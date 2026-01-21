@@ -1,6 +1,4 @@
 #pragma once
-
-#include <cstdint>
 #include <stdint.h>
 
 #define WIDTH 64
