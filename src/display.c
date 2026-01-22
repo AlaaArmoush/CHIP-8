@@ -17,10 +17,10 @@ uint8_t display_draw_sprite(Chip8 *chip8, uint8_t x, uint8_t y, uint8_t height,
   for (int row = 0; row < height; row++) {
     if (pixel_y + row >= HEIGHT)
       break;
-    uint8_t row_data = memory_read(chip8, address);
+    uint8_t row_data = memory_read(chip8, address + row);
 
     for (int col = 0; col < 8; col++) {
-      if (x + col >= WIDTH)
+      if (pixel_x + col >= WIDTH)
         break;
       uint8_t sprite_pixel = (row_data >> (7 - col)) & 0x01;
       if (sprite_pixel) {
