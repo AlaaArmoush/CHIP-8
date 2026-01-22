@@ -10,7 +10,21 @@ HEADERS := \
 	include/memory.h \
 	include/timers.h
 
-.PHONY: headers
+SOURCES := \
+	src/audio.c \
+	src/chip8.c \
+	src/display.c \
+	src/input.c \
+	src/memory.c \
+	src/timers.c
+
+.PHONY: headers modules all
+
+all: headers modules
 
 headers:
 	$(CC) $(CFLAGS) $(HEADERS)
+
+modules:
+	$(CC) $(CFLAGS) $(SOURCES)
+
