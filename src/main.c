@@ -9,15 +9,39 @@
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <wchar.h>
 
 #define PIXEL_SCALE 10
 #define WINDOW_WIDTH (WIDTH * PIXEL_SCALE)
 #define WINDOW_HEIGHT (HEIGHT * PIXEL_SCALE)
+
+static const SDL_Scancode chip8_keymap[NUM_KEYS] = {
+    SDL_SCANCODE_1, // 1
+    SDL_SCANCODE_2, // 2
+    SDL_SCANCODE_3, // 3
+    SDL_SCANCODE_4, // C
+
+    SDL_SCANCODE_Q, // 4
+    SDL_SCANCODE_W, // 5
+    SDL_SCANCODE_E, // 6
+    SDL_SCANCODE_R, // D
+
+    SDL_SCANCODE_A, // 7
+    SDL_SCANCODE_S, // 8
+    SDL_SCANCODE_D, // 9
+    SDL_SCANCODE_F, // E
+
+    SDL_SCANCODE_Z, // A
+    SDL_SCANCODE_X, // 0
+    SDL_SCANCODE_C, // B
+    SDL_SCANCODE_V  // F
+};
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -33,7 +57,7 @@ int main(int argc, char *argv[]) {
   input_init(&chip8);
   memory_load_rom(&chip8, argv[1]);
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
     return 1;
   }
@@ -58,8 +82,14 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  if (!audio_init()) {
+    fprintf(stderr, "Warning: Audio initialization failed\n");
+  }
+
   bool quit = false;
   SDL_Event event;
+
+  uint64_t last_timer_update = SDL_GetTicks64();
 
   while (!quit) {
     while (SDL_PollEvent(&event)) {
@@ -67,9 +97,25 @@ int main(int argc, char *argv[]) {
         quit = true;
     }
 
+    const uint8_t *keyboard_state = SDL_GetKeyboardState(NULL);
+    for (uint8_t i = 0; i < NUM_KEYS; i++) {
+      input_set_key(&chip8, i, keyboard_state[chip8_keymap[i]]);
+    }
+
     // 10 instruction per frame (600 per second)
     for (uint8_t i = 0; i < 10; i++) {
       cpu_cycle(&chip8);
+    }
+
+    uint64_t current_time = SDL_GetTicks64();
+    if (current_time - last_timer_update >= 16) {
+      timers_update(&chip8);
+      last_timer_update = current_time;
+      if (timers_get_sound(&chip8) > 0) {
+        audio_start_beep();
+      } else {
+        audio_stop_beep();
+      }
     }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -88,6 +134,7 @@ int main(int argc, char *argv[]) {
     SDL_Delay(16);
   }
 
+  audio_cleanup();
   SDL_RenderClear(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
