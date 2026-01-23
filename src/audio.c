@@ -59,3 +59,16 @@ bool audio_init(void) {
   SDL_PauseAudioDevice(audio_device, 0);
   return true;
 }
+
+void audio_cleanup(void) {
+  if (audio_device != 0) {
+    SDL_CloseAudioDevice(audio_device);
+    audio_device = 0;
+  }
+}
+
+void audio_start_beep(void) { beep_active = true; }
+
+void audio_stop_beep(void) { beep_active = false; }
+
+bool audio_is_beeping(void) { return beep_active; }
