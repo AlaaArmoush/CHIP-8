@@ -73,6 +73,63 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
         chip8->index_register);
     break;
 
+  case 0x2000:
+    // 2NNN: Call subroutine at address NNN
+    chip8->stack[chip8->stack_pointer++] =
+        chip8->program_counter; // save addr to return to
+    chip8->program_counter = address_nnn;
+    break;
+
+  case 0x3000:
+    // 3XNN: Skip next instruction if VX == NN
+    if (chip8->registers[x_reg] == immediate_nn) {
+      chip8->program_counter += 2;
+    }
+    break;
+
+  case 0x4000:
+    // 4XNN: skip next instruction if VX != NN
+    if (!chip8->registers[x_reg] != immediate_nn) {
+      chip8->program_counter += 2;
+    }
+    break;
+
+  case 0x5000:
+    // 5XY0: skip next instruction if VX == VY
+    if (chip8->registers[x_reg] == chip8->registers[y_reg]) {
+      chip8->program_counter += 2;
+    }
+    break;
+
+  case 0x9000:
+    // 9XY0: skip next instruction if VX != VY
+    if (chip8->registers[x_reg] != chip8->registers[y_reg]) {
+      chip8->program_counter += 2;
+    }
+    break;
+
+  case 0x8000:
+    switch (opcode & 0x000F) {
+    case 0x0:
+      chip8->registers[x_reg] = chip8->registers[y_reg];
+      break;
+    case 0x1:
+      chip8->registers[x_reg] |= chip8->registers[y_reg];
+      break;
+    case 0x2:
+      chip8->registers[x_reg] &= chip8->registers[y_reg];
+      break;
+    case 0x3:
+      chip8->registers[x_reg] ^= chip8->registers[y_reg];
+      break;
+    case 0x4:
+      // unlike 7XNN thr carry flag is affected here
+      uint16_t sum = chip8->registers[x_reg] + chip8->registers[y_reg];
+      chip8->registers[0xF] = (sum > 255) ? 1 : 0;
+      chip8->registers[x_reg] = sum & 0xFF;
+      break;
+    }
+
   default:
     printf("Unknown opcode: 0x%04X\n", opcode);
     break;
