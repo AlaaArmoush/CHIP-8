@@ -130,12 +130,12 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
       break;
     case 0x5:
       chip8->registers[0xF] =
-          (chip8->registers[x_reg] > chip8->registers[y_reg]) ? 1 : 0;
+          (chip8->registers[x_reg] >= chip8->registers[y_reg]) ? 1 : 0;
       chip8->registers[x_reg] -= chip8->registers[y_reg];
       break;
     case 0x07:
       chip8->registers[0xF] =
-          (chip8->registers[x_reg] < chip8->registers[y_reg]) ? 1 : 0;
+          (chip8->registers[x_reg] <= chip8->registers[y_reg]) ? 1 : 0;
       chip8->registers[x_reg] =
           chip8->registers[y_reg] - chip8->registers[x_reg];
       break;
