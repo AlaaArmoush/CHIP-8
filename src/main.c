@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -22,25 +23,22 @@
 #define WINDOW_HEIGHT (HEIGHT * PIXEL_SCALE)
 
 static const SDL_Scancode chip8_keymap[NUM_KEYS] = {
-    SDL_SCANCODE_1, // 1
-    SDL_SCANCODE_2, // 2
-    SDL_SCANCODE_3, // 3
-    SDL_SCANCODE_4, // C
-
-    SDL_SCANCODE_Q, // 4
-    SDL_SCANCODE_W, // 5
-    SDL_SCANCODE_E, // 6
-    SDL_SCANCODE_R, // D
-
-    SDL_SCANCODE_A, // 7
-    SDL_SCANCODE_S, // 8
-    SDL_SCANCODE_D, // 9
-    SDL_SCANCODE_F, // E
-
-    SDL_SCANCODE_Z, // A
-    SDL_SCANCODE_X, // 0
-    SDL_SCANCODE_C, // B
-    SDL_SCANCODE_V  // F
+    SDL_SCANCODE_X, // CHIP-8 key 0
+    SDL_SCANCODE_1, // CHIP-8 key 1
+    SDL_SCANCODE_2, // CHIP-8 key 2
+    SDL_SCANCODE_3, // CHIP-8 key 3
+    SDL_SCANCODE_Q, // CHIP-8 key 4
+    SDL_SCANCODE_W, // CHIP-8 key 5
+    SDL_SCANCODE_E, // CHIP-8 key 6
+    SDL_SCANCODE_A, // CHIP-8 key 7
+    SDL_SCANCODE_S, // CHIP-8 key 8
+    SDL_SCANCODE_D, // CHIP-8 key 9
+    SDL_SCANCODE_Z, // CHIP-8 key A
+    SDL_SCANCODE_C, // CHIP-8 key B
+    SDL_SCANCODE_4, // CHIP-8 key C
+    SDL_SCANCODE_R, // CHIP-8 key D
+    SDL_SCANCODE_F, // CHIP-8 key E
+    SDL_SCANCODE_V  // CHIP-8 key F
 };
 
 int main(int argc, char *argv[]) {
@@ -65,7 +63,7 @@ int main(int argc, char *argv[]) {
   SDL_Window *window = SDL_CreateWindow(
       "CHIP-8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-  SDL_SetWindowSize(window, WINDOW_WIDTH, WINDOW_HEIGHT);
+  SDL_SetWindowSize(window, 1280, 720);
 
   if (!window) {
     fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
@@ -130,6 +128,9 @@ int main(int argc, char *argv[]) {
         }
       }
     }
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Rect border = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+    SDL_RenderDrawRect(renderer, &border);
     SDL_RenderPresent(renderer);
     SDL_Delay(16);
   }
