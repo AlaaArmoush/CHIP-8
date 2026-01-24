@@ -204,12 +204,12 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
       memory_write(chip8, chip8->index_register + 2, value % 10);
       break;
     case 0x55:
-      for (uint8_t i = 0; i < x_reg; i++) {
+      for (uint8_t i = 0; i <= x_reg; i++) {
         memory_write(chip8, chip8->index_register + i, chip8->registers[i]);
       }
       break;
     case 0x65:
-      for (int i = 0; i < x_reg; i++) {
+      for (int i = 0; i <= x_reg; i++) {
         chip8->registers[i] = memory_read(chip8, chip8->index_register + i);
       }
       break;
