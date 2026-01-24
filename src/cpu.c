@@ -109,7 +109,7 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
     break;
 
   case 0x8000:
-    switch (opcode & 0x000F) {
+    switch (nibble_n) {
     case 0x0:
       chip8->registers[x_reg] = chip8->registers[y_reg];
       break;
@@ -140,12 +140,15 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
           chip8->registers[y_reg] - chip8->registers[x_reg];
       break;
     case 0x06:
+      chip8->registers[x_reg] = chip8->registers[y_reg];
       chip8->registers[x_reg] >>= 1;
       break;
     case 0x0E:
+      chip8->registers[x_reg] = chip8->registers[y_reg];
       chip8->registers[x_reg] <<= 1;
       break;
     }
+    break;
 
   case 0xB000:
     chip8->program_counter = address_nnn + chip8->registers[0x0];
@@ -155,6 +158,63 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
     chip8->registers[x_reg] = (rand() % 256) & immediate_nn;
     break;
 
+  case 0xE000:
+    if (immediate_nn == 0x9E) {
+      if (input_check_key(chip8, chip8->keypad[x_reg])) {
+        chip8->program_counter += 2;
+      }
+    } else if (immediate_nn == 0xA1) {
+      if (!input_check_key(chip8, chip8->keypad[x_reg])) {
+        chip8->program_counter += 2;
+      }
+    }
+    break;
+
+  case 0xF000:
+    switch (immediate_nn) {
+    case 0x07:
+      chip8->registers[x_reg] = timers_get_delay(chip8);
+      break;
+    case 0x15:
+      timers_set_delay(chip8, chip8->registers[x_reg]);
+      break;
+    case 0x18:
+      timers_set_sound(chip8, chip8->registers[x_reg]);
+      break;
+    case 0x1E:
+      chip8->index_register += chip8->registers[x_reg];
+      break;
+    case 0x0A: {
+      int8_t pressed_key = input_wait_for_key(chip8);
+      if (pressed_key != -1) {
+        chip8->registers[x_reg] = pressed_key;
+      } else {
+        // repeat instruction
+        chip8->program_counter -= 2;
+      }
+      break;
+    }
+    case 0x29:
+      chip8->index_register = FONT_START + chip8->registers[x_reg];
+      break;
+    case 0x33:;
+      uint8_t value = chip8->registers[x_reg];
+      memory_write(chip8, chip8->index_register, value / 100);
+      memory_write(chip8, chip8->index_register + 1, (value / 10) % 10);
+      memory_write(chip8, chip8->index_register + 2, value % 10);
+      break;
+    case 0x55:
+      for (uint8_t i = 0; i < x_reg; i++) {
+        memory_write(chip8, chip8->index_register + i, chip8->registers[i]);
+      }
+      break;
+    case 0x65:
+      for (int i = 0; i < x_reg; i++) {
+        chip8->registers[i] = memory_read(chip8, chip8->index_register + i);
+      }
+      break;
+    }
+    break;
   default:
     printf("Unknown opcode: 0x%04X\n", opcode);
     break;
