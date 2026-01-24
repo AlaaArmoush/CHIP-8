@@ -89,7 +89,7 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
 
   case 0x4000:
     // 4XNN: skip next instruction if VX != NN
-    if (!chip8->registers[x_reg] != immediate_nn) {
+    if (chip8->registers[x_reg] != immediate_nn) {
       chip8->program_counter += 2;
     }
     break;
@@ -122,13 +122,38 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
     case 0x3:
       chip8->registers[x_reg] ^= chip8->registers[y_reg];
       break;
-    case 0x4:
+    case 0x4:;
       // unlike 7XNN thr carry flag is affected here
       uint16_t sum = chip8->registers[x_reg] + chip8->registers[y_reg];
       chip8->registers[0xF] = (sum > 255) ? 1 : 0;
       chip8->registers[x_reg] = sum & 0xFF;
       break;
+    case 0x5:
+      chip8->registers[0xF] =
+          (chip8->registers[x_reg] > chip8->registers[y_reg]) ? 1 : 0;
+      chip8->registers[x_reg] -= chip8->registers[y_reg];
+      break;
+    case 0x07:
+      chip8->registers[0xF] =
+          (chip8->registers[x_reg] < chip8->registers[y_reg]) ? 1 : 0;
+      chip8->registers[x_reg] =
+          chip8->registers[y_reg] - chip8->registers[x_reg];
+      break;
+    case 0x06:
+      chip8->registers[x_reg] >>= 1;
+      break;
+    case 0x0E:
+      chip8->registers[x_reg] <<= 1;
+      break;
     }
+
+  case 0xB000:
+    chip8->program_counter = address_nnn + chip8->registers[0x0];
+    break;
+
+  case 0xC000:
+    chip8->registers[x_reg] = (rand() % 256) & immediate_nn;
+    break;
 
   default:
     printf("Unknown opcode: 0x%04X\n", opcode);
