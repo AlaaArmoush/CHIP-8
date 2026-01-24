@@ -160,11 +160,11 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
 
   case 0xE000:
     if (immediate_nn == 0x9E) {
-      if (input_check_key(chip8, chip8->keypad[x_reg])) {
+      if (input_check_key(chip8, chip8->registers[x_reg])) {
         chip8->program_counter += 2;
       }
     } else if (immediate_nn == 0xA1) {
-      if (!input_check_key(chip8, chip8->keypad[x_reg])) {
+      if (!input_check_key(chip8, chip8->registers[x_reg])) {
         chip8->program_counter += 2;
       }
     }
