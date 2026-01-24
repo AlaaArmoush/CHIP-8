@@ -41,3 +41,7 @@ make run pong
   <img width="48%" height="220" alt="2" src="https://github.com/user-attachments/assets/17c2b03e-a0b1-4b04-a92b-b8aab27998c0" />
   <img width="48%" height="250" alt="1" src="https://github.com/user-attachments/assets/af91bad1-85c3-40e1-a5f8-ea267369109b" />
 </p>
+
+## Acknowledgments
+
+* [Tobias V. Langhoff](https://tobiasvl.github.io/blog/write-a-chip-8-emulator/) - For his high-level guide to making a CHIP-8 emulator.
