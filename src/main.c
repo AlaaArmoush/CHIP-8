@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 
   SDL_Window *window = SDL_CreateWindow(
       "CHIP-8 Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+      WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
   SDL_SetWindowSize(window, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   if (!window) {
