@@ -16,7 +16,7 @@ bool input_check_key(Chip8 *chip8, uint8_t key) {
     return false;
   return chip8->keypad[key] != 0;
 }
-int input_wait_for_key(const Chip8 *chip8) {
+int8_t input_wait_for_key(const Chip8 *chip8) {
   for (uint8_t i = 0; i < NUM_KEYS; i++) {
     if (chip8->keypad[i])
       return i;

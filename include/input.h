@@ -6,4 +6,4 @@
 void input_init(Chip8 *chip8);
 void input_set_key(Chip8 *chip8, uint8_t key, bool pressed);
 bool input_check_key(Chip8 *chip8, uint8_t key);
-int input_wait_for_key(const Chip8 *chip8);
+int8_t input_wait_for_key(const Chip8 *chip8);
