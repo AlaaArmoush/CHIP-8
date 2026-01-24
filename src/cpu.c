@@ -195,7 +195,7 @@ static void execute_instruction(Chip8 *chip8, uint16_t opcode) {
       break;
     }
     case 0x29:
-      chip8->index_register = FONT_START + chip8->registers[x_reg];
+      chip8->index_register = FONT_START + chip8->registers[x_reg] * 5;
       break;
     case 0x33:;
       uint8_t value = chip8->registers[x_reg];
